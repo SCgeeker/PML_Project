@@ -43,37 +43,10 @@ testing = adData[-inTrain,]
 trainingIL <- training[,grep("^IL", names(training) )  ]
 testingIL <-testing[,grep("^IL", names(testing) )  ]
 
+# According to Kuhn (2008), page 5, bottom paragraph
 
-preProc5 <- preProcess(trainingIL, method="pca", pcaComp=5)
-preProc7 <- preProcess(trainingIL, method="pca", pcaComp=7)
-preProc9 <- preProcess(trainingIL, method="pca", pcaComp=9)
-preProc11 <- preProcess(trainingIL, method="pca", pcaComp=11)
-
-trainPC5 <- predict(preProc5,trainingIL)
-trainPC7 <- predict(preProc7,trainingIL)
-trainPC9 <- predict(preProc9,trainingIL)
-trainPC11 <- predict(preProc11,trainingIL)
-
-modelFit5 <- train(training$diagnosis ~ .,method="glm",data=trainPC5)
-modelFit7 <- train(training$diagnosis ~ .,method="glm",data=trainPC7)
-modelFit9 <- train(training$diagnosis ~ .,method="glm",data=trainPC9)
-modelFit11 <- train(training$diagnosis ~ .,method="glm",data=trainPC11)
-
-modelFit5$finalModel
-modelFit7$finalModel
-modelFit9$finalModel
-modelFit11$finalModel
-
-testPC5 <- predict(preProc5,testingIL)
-testPC7 <- predict(preProc7,testingIL)
-testPC9 <- predict(preProc9,testingIL)
-testPC11 <- predict(preProc11,testingIL)
-
-confusionMatrix(testing$diagnosis, predict(modelFit5,testPC5))
-confusionMatrix(testing$diagnosis, predict(modelFit7,testPC7))
-confusionMatrix(testing$diagnosis, predict(modelFit9,testPC9))
-confusionMatrix(testing$diagnosis, predict(modelFit11,testPC11))
-
+preProcIL <- preProcess(trainingIL, method="pca", thresh=.90)
+preProcIL
 
 
 #Q5
@@ -82,8 +55,18 @@ confusionMatrix(testing$diagnosis, predict(modelFit11,testPC11))
 ## 80% of the variance in the predictors. Use method="glm" in the train function.
 ## What is the accuracy of each method in the test set? Which is more accurate?
 
+trainingD <- training[,c(1, grep("^IL", names(training) ) ) ]
+testingD <- testing[,c(1, grep("^IL", names(training) ) ) ]
 
+preProcAll <- preProcess(trainingD[,-1],method=c("center","scale"))
+trainAll <- predict(preProcAll, trainingD[,-1])
+modelFitAll <- train(trainingD$diagnosis ~ ., method="glm", data=trainAll)
+confusionMatrix(testingD$diagnosis, predict(modelFitAll,testingD[,-1]))
 
+preProcPCA <- preProcess(trainingD[,-1], method="pca", thresh=.80)
+trainPCA <- predict(preProcPCA, trainingD[,-1])
+modelFitPCA <- train(trainingD$diagnosis ~ ., method="glm", data=trainPCA)
+confusionMatrix(testingD$diagnosis, predict(modelFitPCA,testingD[,-1]))
 
 
 library(AppliedPredictiveModeling); data(concrete); library(caret); library(Hmisc); library(gridExtra)
