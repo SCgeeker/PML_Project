@@ -1,5 +1,5 @@
-# Q1 
 library(AppliedPredictiveModeling); library(caret); data(AlzheimerDisease)
+# Q1 
 ## Code 01 
 adData = data.frame(id=paste0('p',1:333), diagnosis,predictors)
 testIndex = createDataPartition(diagnosis, p = 0.50,list=FALSE)
@@ -58,16 +58,20 @@ preProcIL
 trainingD <- training[,c(1, grep("^IL", names(training) ) ) ]
 testingD <- testing[,c(1, grep("^IL", names(training) ) ) ]
 
-preProcAll <- preProcess(trainingD[,-1],method=c("center","scale"))
-trainAll <- predict(preProcAll, trainingD[,-1])
-modelFitAll <- train(trainingD$diagnosis ~ ., method="glm", data=trainAll)
+#preProcAll <- preProcess(trainingD[,-1],method=c("center","scale"))
+#trainAll <- predict(preProcAll, trainingD[,-1])
+modelFitAll <- train(trainingD$diagnosis ~ ., method="glm", preProcess=c("center","scale"), data=trainingD)
 confusionMatrix(testingD$diagnosis, predict(modelFitAll,testingD[,-1]))
 
 preProcPCA <- preProcess(trainingD[,-1], method="pca", thresh=.80)
 trainPCA <- predict(preProcPCA, trainingD[,-1])
 modelFitPCA <- train(trainingD$diagnosis ~ ., method="glm", data=trainPCA)
-confusionMatrix(testingD$diagnosis, predict(modelFitPCA,testingD[,-1]))
+testPCA <- predict(preProcPCA, testingD[,-1])
+confusionMatrix(testingD$diagnosis, predict(modelFitPCA,testPCA))
 
+
+
+## ============================================== ##
 
 library(AppliedPredictiveModeling); data(concrete); library(caret); library(Hmisc); library(gridExtra)
 set.seed(975)
