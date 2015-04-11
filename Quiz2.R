@@ -25,6 +25,67 @@ test = createDataPartition(diagnosis, p = 0.50,list=FALSE)
 sum(training[,1]==testing[,1])
 
 
+
+
+
+set.seed(3433)
+data(AlzheimerDisease)
+adData = data.frame(diagnosis,predictors)
+inTrain = createDataPartition(adData$diagnosis, p = 3/4)[[1]]
+training = adData[ inTrain,]
+testing = adData[-inTrain,]
+
+#Q4
+## Find all the predictor variables in the training set that begin with IL. 
+## Perform principal components on these variables with the preProcess() function from the caret package. 
+## Calculate the number of principal components needed to capture 90% of the variance. 
+## How many are there?
+trainingIL <- training[,grep("^IL", names(training) )  ]
+testingIL <-testing[,grep("^IL", names(testing) )  ]
+
+
+preProc5 <- preProcess(trainingIL, method="pca", pcaComp=5)
+preProc7 <- preProcess(trainingIL, method="pca", pcaComp=7)
+preProc9 <- preProcess(trainingIL, method="pca", pcaComp=9)
+preProc11 <- preProcess(trainingIL, method="pca", pcaComp=11)
+
+trainPC5 <- predict(preProc5,trainingIL)
+trainPC7 <- predict(preProc7,trainingIL)
+trainPC9 <- predict(preProc9,trainingIL)
+trainPC11 <- predict(preProc11,trainingIL)
+
+modelFit5 <- train(training$diagnosis ~ .,method="glm",data=trainPC5)
+modelFit7 <- train(training$diagnosis ~ .,method="glm",data=trainPC7)
+modelFit9 <- train(training$diagnosis ~ .,method="glm",data=trainPC9)
+modelFit11 <- train(training$diagnosis ~ .,method="glm",data=trainPC11)
+
+modelFit5$finalModel
+modelFit7$finalModel
+modelFit9$finalModel
+modelFit11$finalModel
+
+testPC5 <- predict(preProc5,testingIL)
+testPC7 <- predict(preProc7,testingIL)
+testPC9 <- predict(preProc9,testingIL)
+testPC11 <- predict(preProc11,testingIL)
+
+confusionMatrix(testing$diagnosis, predict(modelFit5,testPC5))
+confusionMatrix(testing$diagnosis, predict(modelFit7,testPC7))
+confusionMatrix(testing$diagnosis, predict(modelFit9,testPC9))
+confusionMatrix(testing$diagnosis, predict(modelFit11,testPC11))
+
+
+
+#Q5
+## Create a training data set consisting of only the predictors with variable names beginning with IL and the diagnosis.
+## Build two predictive models, one using the predictors as they are and one using PCA with principal components explaining
+## 80% of the variance in the predictors. Use method="glm" in the train function.
+## What is the accuracy of each method in the test set? Which is more accurate?
+
+
+
+
+
 library(AppliedPredictiveModeling); data(concrete); library(caret); library(Hmisc); library(gridExtra)
 set.seed(975)
 inTrain = createDataPartition(mixtures$CompressiveStrength, p = 3/4)[[1]]
@@ -59,25 +120,3 @@ grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,ncol=4,nrow=2)
 hist(log( training$Superplasticizer + 1 ) )
 
 
-set.seed(3433)
-data(AlzheimerDisease)
-adData = data.frame(diagnosis,predictors)
-inTrain = createDataPartition(adData$diagnosis, p = 3/4)[[1]]
-training = adData[ inTrain,]
-testing = adData[-inTrain,]
-
-#Q4
-## Find all the predictor variables in the training set that begin with IL. 
-## Perform principal components on these variables with the preProcess() function from the caret package. 
-## Calculate the number of principal components needed to capture 90% of the variance. 
-## How many are there?
-preProc <- preProcess(training[,grep("^IL", names(training) )], method="pca", pcaComp=12)
-# adPC <- predict(preProc, training[,grep("^IL", names(training) )])
-trainAD <- predict(preProc, training[,grep("^IL", names(training) )])
-modelFit <- train(training$diagnosis ~ names(training)[grep("^IL", names(training) )], method=glm, data=training)
-
-
-modelFit <- train
-
-#Q5
-## 
