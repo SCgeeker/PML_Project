@@ -1,0 +1,28 @@
+
+### paper cited
+Velloso, E.; Bulling, A.; Gellersen, H.; Ugulino, W.; Fuks, H. Qualitative Activity Recognition of Weight Lifting Exercises. Proceedings of 4th International Conference in Cooperation with SIGCHI (Augmented Human '13) . Stuttgart, Germany: ACM SIGCHI, 2013.
+
+### Method selected the relavent features
+...we used the feature selection algorithm based on correlation proposed by
+Hall [14]. The algorithm was conﬁgured to use a “Best First” strategy based on backtracking. 
+
+### Features selected by original authors
+In the belt, were selected the mean and variance of the roll,
+maximum, range and variance of the accelerometer vector,
+variance of the gyro and variance of the magnetometer.
+_belt "avg_roll_belt", "var_roll_belt", 
+
+In the arm, the variance of the accelerometer vector and the
+maximum and minimum of the magnetometer were selected.
+
+In the dumbbell, the selected features were the maximum of
+the  acceleration,  variance  of  the  gyro  and  maximum  and 
+minimum of the magnetometer
+
+In the forearm, the sum of the pitch and the maximum and minimum of the gyro were selected.
+
+
+### Prediction algorithm
+ used  a  Random  Forest  approach
+ To improve recognition performance we used an ensemble of classiﬁers using the “Bagging”method 
+10 random forests and each forest was implemented with 10 trees.
