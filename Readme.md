@@ -1,1 +1,1 @@
-## Record my self learning progress
+## Record my machine learning progress
