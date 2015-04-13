@@ -102,12 +102,13 @@ require(forecast)
 Tumblr.fit <- bats(tstrain)
 ## Then forecast this model for the remaining time points.
 ## For how many of the testing points is the true value within the 95% prediction interval bounds?
-Tumblr.fcast <- forecast(Tumblr.fit)
-sum(testing$visitsTumblr < mean(Tumblr.fcast$upper[,2]))/length(testing$visitsTumblr)
+Tumblr.fcast <- forecast(Tumblr.fit, level=95, h=nrow(testing))
+sum(testing$visitsTumblr < Tumblr.fcast$upper)/length(testing$visitsTumblr)
 
 
 
 #Q5
+library(caret)
 set.seed(3523)
 library(AppliedPredictiveModeling)
 data(concrete)
@@ -119,7 +120,7 @@ testing = concrete[-inTrain,]
 ## to predict Compressive Strength using the default settings.
 set.seed(325)
 library(e1071)
-modFit <- svm(training$CompressiveStrength ~ ., data=training)
+modFit <- svm(CompressiveStrength ~ ., data=training)
 ## Predict on the testing set. What is the RMSE?
 pred <- predict(modFit, testing)
-sqrt( sum( (pred - testing$CompressiveStrength)^2 ) )
+sqrt( (1/nrow(testing)) * sum( (pred - testing$CompressiveStrength)^2 ) ) # a littler larger than the option
