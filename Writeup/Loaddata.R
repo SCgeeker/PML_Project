@@ -7,7 +7,7 @@
 #download(testUrl)
 
 # Load and clean data
-pml_training <- read.csv(file="./writeup/pml-training.csv")[,-1]
-pml_testing <- read.csv(file="./writeup/pml-testing.csv")[,-1]
+pml_training <- read.csv(file="./writeup/pml-training.csv", na.strings=c("NA", "#DIV/0!"))[,-1]
+pml_testing <- read.csv(file="./writeup/pml-testing.csv" ,na.strings=c("NA", "#DIV/0!"))[,-1]
 
 
