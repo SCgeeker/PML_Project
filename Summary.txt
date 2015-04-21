@@ -20,18 +20,31 @@ In the belt, were selected the *mean* and *variance* of the roll,
 *maximum*, *range* and *variance* of the accelerometer vector,
 *variance* of the gyro and *variance* of the magnetometer. ... 7
 
-_belt "avg_roll_belt"  "var_roll_belt"  "total_accel_belt" "var_total_accel_belt" "accel_belt_x" "accel_belt_y" "accel_belt_z" "
+_belt "avg_roll_belt"  "var_roll_belt"      
+      "total_accel_belt" "var_total_accel_belt" "accel_belt_x"         "accel_belt_y"         "accel_belt_z"
+      "gyros_belt_x"     "gyros_belt_y"     "gyros_belt_z"
+      "magnet_belt_x"     "magnet_belt_y"     "magnet_belt_z"
       
 
 In the arm, the *variance* of the accelerometer vector and the
 *maximum* and *minimum* of the magnetometer were selected. ... 3
 
+_arm  "accel_arm_x"     "accel_arm_y" "accel_arm_z"
+      "magnet_arm_x"  "magnet_arm_y"    "magnet_arm_z"
+
+
 In the dumbbell, the selected features were the *maximum* of
 the  acceleration,  *variance*  of  the  gyro  and  *maximum*  and 
 *minimum* of the magnetometer  ... 4
 
+_dumbbell "accel_dumbbell_x"         "accel_dumbbell_y"         "accel_dumbbell_z"
+          "gyros_dumbbell_x"   "gyros_dumbbell_y"         "gyros_dumbbell_z" 
+          "magnet_dumbbell_x"        "magnet_dumbbell_y"        "magnet_dumbbell_z"
+
 In the forearm, the *sum* of the pitch and the *maximum* and *minimum* of the gyro were selected. ... 3
 
+_forearm  "pitch_forearm"
+           "gyros_forearm_x" "gyros_forearm_y"         "gyros_forearm_z"
 
 ### Prediction algorithm
  used  a  Random  Forest  approach
