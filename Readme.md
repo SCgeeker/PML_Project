@@ -1,1 +1,1 @@
-## Record my machine learning progress
+## Archive of 'practical machine learning'
