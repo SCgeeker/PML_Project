@@ -1,7 +1,7 @@
 ---
 title: "Reproduciable Research on Weight Lifting Exercise Dataset"
 author: "A brief report for Coursera Data Science Program Assignment"
-date: "Thursday, April 23, 2015"
+date: "Friday, April 24, 2015"
 output:
   html_document:
     fig_caption: yes
@@ -30,9 +30,9 @@ This project aims to [The training data](https://d396qusza40orc.cloudfront.net/p
 ## Aims
 This project reproduced the analysis on the data sets and investigates the overfitting problem the algorithms Velloso et al. used and we used. The algorithm used in the original work was Random Forest. [This figure](./img/wle_confusion_matrix.png) illustrates the accuracies and errors this model's predictions.  
 
-In this project, We used k-nearest neighbour (available in `class` package) and Boosting (available in `caret` package) to build the statistical model. Finallt we discuss the overfitting problem by comparing Velloso's result and our result.  
+In this project, We attempt k-nearest neighbour (available in `class` package) and Boosting (available in `caret` package) to predict the outcomes. In use of Boosting method, 70% of training data set was used to train the model and 30% was used to calcuate out of sample errors.
 
-**Note.** For saving comuptation time, the results were saved in an image file before we compiled this webpage. This webpage loads the results from the image file and demostrates the critical codes to acquire these results.  
+**Note.** For saving comuptation time, the results were saved in an image file before we compiled this webpage. This webpage loads the processed data from the image file and demostrates the critical codes to acquire these results.  
 
 ### Features Selection
 Within 152 features, only 17 features were used in Velloso's original work. To save the computation resource, we selected 32 features according to the description in Velloso's paper. These features are as below list.  
@@ -40,10 +40,13 @@ Within 152 features, only 17 features were used in Velloso's original work. To s
 AuthorSelected
 ```
 
-In training and testing data sets, these features and the outcome variable (classe) are retrieved and stored in the new data frames.
+In training and testing data sets, these features and the outcome variable (classe) are retrieved and stored in the new data frames. 30% of `TrainCleaned2` were sampled for calcuating the out of sample errors of Boosting model later.
 ```
 TrainCleaned2 <- data.frame(classe = pml_training[,159], pml_training[,AuthorSelected])
 TestCleaned2 <- data.frame(classe = pml_testing[,159], pml_testing[,AuthorSelected])
+cvInd <-  createDataPartition(y = TrainCleaned2$classe, p=0.3,list=FALSE)
+TCSet <- TrainCleaned2[-cvInd,]
+CVSet <- TrainCleaned2[cvInd,]
 ```
 
 ### Pre-processing Missing Data
@@ -90,26 +93,30 @@ The average probability smoothly decreased from 100% to 85%. The point at **k=5*
 ### Prediction Method 2: Boosting
 We dcided Boosting algorithm because it could weight many weak predictors and add them into the model iteratively. This final model was bulit based on the method `gbm`.
 ```
-gbmFIT <- train(classe ~ ., method = "gbm", data = TrainCleaned2)
+gbmFIT <- train(classe ~ ., method = "gbm", data = TCSet)
 ```
 ```{r gbmFIT, echo=TRUE, results='markup', warning=FALSE, message=FALSE}
 print(gbmFIT)
 ```
 The results outputed by `confusionMatrix()` illustreated how accurate this model predict.
 ```{r confusion, echo=TRUE, results='markup', warning=FALSE, message=FALSE}
-confusionMatrix( TrainCleaned2$classe,   predict(gbmFIT, TrainCleaned2) ) 
+confusionMatrix( TCSet$classe,   predict(gbmFIT, TCSet) ) 
 ```
-This model gave the alternative answers for the testing data:
+This model gave the alternative answers for the default testing data:
 ```{r gbmANS, echo=TRUE, results='markup', warning=FALSE, message=FALSE}
-predict(gbmFIT, TestCleaned2)
+print( predict(gbmFIT, TestCleaned2) )
 ```
 
 ### Overfitting Problem
-Transfered the confusion matrix of current result to the propotion, we found that the model built by Boosting algorithm have higher accuracies than the original model on the training data set.
+Transfered the confusion matrix of current result to the propotion, we found that the model built by Boosting algorithm have higher accuracies than the original model on the training data set. Our model might have a high out of sample error.
 ```{r confusionProb, echo=FALSE, results='markup', warning=FALSE, message=FALSE}
-round(table(predict(gbmFIT, TrainCleaned2), TrainCleaned2[,1])/summary(TrainCleaned2[,1]), digits=2)
+round(table(predict(gbmFIT, TCSet), TCSet[,1])/summary(TCSet[,1]), digits=2)
 ```
 </br>
 <img src="./img/wle_confusion_matrix.png", height=300, width=300></img>
 </br>
-On the other hand, the data set used in this project is almost half of the original data set (`r dim(pml_training)[1]` vs. 39,242). The model built by Boosting algorithm might have more out of sampler errors than the original work. As like the different predictions between KNN and Boosting methods, the model generated from the smaller training data set have a poor performance on predicting the smaller testing data set.
+```
+cvPred <- predict(gbmFIT, CVSet)
+gbmOSE <- sum(cvPred == CVSet$classe)/nrow(CVSet)
+```
+We produced the prediction values based on the sample data for the cross validation. In our work, the estimated out of sample error is `r round(gbmOSE, digits=2)`.
