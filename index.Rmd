@@ -115,6 +115,6 @@ round(table(predict(gbmFIT, TCSet), TCSet[,1])/summary(TCSet[,1]), digits=2)
 </br>
 ```
 cvPred <- predict(gbmFIT, CVSet)
-gbmOSE <- sum(cvPred == CVSet$classe)/nrow(CVSet)
+gbmOSE <- (1 - sum(cvPred == CVSet$classe)/nrow(CVSet))
 ```
-We produced the prediction values based on the sample data for the cross validation. In our work, the estimated out of sample error is `r round((1 - gbmOSE), digits=2)`.
+We produced the prediction values based on the sample data for the cross validation. In our work, the estimated out of sample error is `r round(gbmOSE, digits=2)`.
